@@ -1,0 +1,1083 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: ViralStore API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: products
+    description: Product management
+  - name: wallets
+    description: Wallet operations
+  - name: referrals
+    description: Referral system
+  - name: domains
+    description: Custom domain management
+  - name: views
+    description: View tracking
+  - name: reports
+    description: Content reporting
+  - name: openrouter
+    description: OpenRouter AI chat operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me/whatsapp:
+    patch:
+      operationId: updateWhatsapp
+      tags: [auth]
+      summary: Update WhatsApp number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWhatsappBody"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products for current user
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductBody"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /shop/{username}:
+    get:
+      operationId: getShop
+      tags: [products]
+      summary: Get public shop by username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Shop data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopData"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wallets:
+    get:
+      operationId: getWallets
+      tags: [wallets]
+      summary: Get current user wallets
+      responses:
+        "200":
+          description: Wallet data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletData"
+
+  /wallets/withdraw:
+    post:
+      operationId: requestWithdrawal
+      tags: [wallets]
+      summary: Request a withdrawal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WithdrawalBody"
+      responses:
+        "200":
+          description: Withdrawal info with fees
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WithdrawalResponse"
+
+  /referrals/settings:
+    get:
+      operationId: getReferralSettings
+      tags: [referrals]
+      summary: Get referral settings for current user
+      responses:
+        "200":
+          description: Referral settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferralSettings"
+    patch:
+      operationId: updateReferralSettings
+      tags: [referrals]
+      summary: Update referral bonus amount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReferralSettingsBody"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferralSettings"
+
+  /referrals/join/{username}:
+    get:
+      operationId: getReferralPage
+      tags: [referrals]
+      summary: Get referral page data for a referrer
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Referral page data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferralPageData"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /referrals/pass/purchase:
+    post:
+      operationId: purchasePass
+      tags: [referrals]
+      summary: Purchase a referral pass
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchasePassBody"
+      responses:
+        "200":
+          description: Pass purchased
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchasePassResponse"
+
+  /referrals/list:
+    get:
+      operationId: listReferrals
+      tags: [referrals]
+      summary: List referrals for current user
+      responses:
+        "200":
+          description: List of referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Referral"
+
+  /adsense/activate:
+    post:
+      operationId: activateAdsense
+      tags: [wallets]
+      summary: Activate AdSense for current user
+      responses:
+        "200":
+          description: AdSense activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdsenseStatus"
+
+  /views/track:
+    post:
+      operationId: trackView
+      tags: [views]
+      summary: Track a unique view for a shop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackViewBody"
+      responses:
+        "200":
+          description: View tracked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViewCount"
+
+  /reports:
+    post:
+      operationId: reportProduct
+      tags: [reports]
+      summary: Report a product video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportBody"
+      responses:
+        "200":
+          description: Report submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResponse"
+
+  /domains/check:
+    post:
+      operationId: checkDomain
+      tags: [domains]
+      summary: Check domain availability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DomainCheckBody"
+      responses:
+        "200":
+          description: Domain check result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DomainCheckResult"
+
+  /domains/purchase:
+    post:
+      operationId: purchaseDomain
+      tags: [domains]
+      summary: Purchase a custom domain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DomainPurchaseBody"
+      responses:
+        "200":
+          description: Domain purchased
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DomainPurchaseResult"
+
+  /domains/list:
+    get:
+      operationId: listDomains
+      tags: [domains]
+      summary: List domains for current user
+      responses:
+        "200":
+          description: List of domains
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Domain"
+
+  /openrouter/conversations:
+    get:
+      operationId: listOpenrouterConversations
+      tags: [openrouter]
+      summary: List all conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenrouterConversation"
+    post:
+      operationId: createOpenrouterConversation
+      tags: [openrouter]
+      summary: Create a new conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOpenrouterConversationBody"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenrouterConversation"
+
+  /openrouter/conversations/{id}:
+    get:
+      operationId: getOpenrouterConversation
+      tags: [openrouter]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenrouterConversationWithMessages"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenrouterError"
+    delete:
+      operationId: deleteOpenrouterConversation
+      tags: [openrouter]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenrouterError"
+
+  /openrouter/conversations/{id}/messages:
+    get:
+      operationId: listOpenrouterMessages
+      tags: [openrouter]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenrouterMessage"
+    post:
+      operationId: sendOpenrouterMessage
+      tags: [openrouter]
+      summary: Send a message and receive an AI response (SSE stream)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOpenrouterMessageBody"
+      responses:
+        "200":
+          description: SSE stream of assistant response chunks
+          content:
+            text/event-stream: {}
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    RegisterBody:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        referredBy:
+          type: string
+      required:
+        - username
+        - email
+        - password
+
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        whatsappNumber:
+          type: string
+          nullable: true
+        adsenseActive:
+          type: boolean
+        totalViews:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - email
+        - adsenseActive
+        - totalViews
+        - createdAt
+
+    UpdateWhatsappBody:
+      type: object
+      properties:
+        whatsappNumber:
+          type: string
+      required:
+        - whatsappNumber
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        actionType:
+          type: string
+          enum: [whatsapp, payment_link]
+        actionValue:
+          type: string
+          nullable: true
+        cloudinaryUrl:
+          type: string
+        cloudinaryPublicId:
+          type: string
+        status:
+          type: string
+          enum: [active, under_review, deleted]
+        reportCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - name
+        - price
+        - actionType
+        - cloudinaryUrl
+        - cloudinaryPublicId
+        - status
+        - reportCount
+        - createdAt
+
+    CreateProductBody:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        actionType:
+          type: string
+          enum: [whatsapp, payment_link]
+        actionValue:
+          type: string
+        cloudinaryUrl:
+          type: string
+        cloudinaryPublicId:
+          type: string
+      required:
+        - name
+        - price
+        - actionType
+        - cloudinaryUrl
+        - cloudinaryPublicId
+
+    ShopData:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        adsenseActive:
+          type: boolean
+      required:
+        - user
+        - products
+        - adsenseActive
+
+    WalletData:
+      type: object
+      properties:
+        salesBalance:
+          type: number
+        adsenseBalance:
+          type: number
+        totalViews:
+          type: integer
+        adsenseActive:
+          type: boolean
+        adsenseThreshold:
+          type: integer
+      required:
+        - salesBalance
+        - adsenseBalance
+        - totalViews
+        - adsenseActive
+        - adsenseThreshold
+
+    WithdrawalBody:
+      type: object
+      properties:
+        walletType:
+          type: string
+          enum: [sales, adsense]
+        amount:
+          type: number
+        mobileMoneyNumber:
+          type: string
+      required:
+        - walletType
+        - amount
+        - mobileMoneyNumber
+
+    WithdrawalResponse:
+      type: object
+      properties:
+        grossAmount:
+          type: number
+        adminFee:
+          type: number
+        netAmount:
+          type: number
+        mobileMoneyNumber:
+          type: string
+      required:
+        - grossAmount
+        - adminFee
+        - netAmount
+        - mobileMoneyNumber
+
+    ReferralSettings:
+      type: object
+      properties:
+        referralCode:
+          type: string
+        passPrice:
+          type: number
+        bonusAmount:
+          type: number
+        adminCommission:
+          type: number
+      required:
+        - referralCode
+        - passPrice
+        - bonusAmount
+        - adminCommission
+
+    UpdateReferralSettingsBody:
+      type: object
+      properties:
+        bonusAmount:
+          type: number
+      required:
+        - bonusAmount
+
+    ReferralPageData:
+      type: object
+      properties:
+        referrerUsername:
+          type: string
+        bonusAmount:
+          type: number
+        passPrice:
+          type: number
+      required:
+        - referrerUsername
+        - bonusAmount
+        - passPrice
+
+    PurchasePassBody:
+      type: object
+      properties:
+        referrerUsername:
+          type: string
+        buyerUserId:
+          type: integer
+      required:
+        - referrerUsername
+        - buyerUserId
+
+    PurchasePassResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        adminAmount:
+          type: number
+        referrerAmount:
+          type: number
+        buyerBonus:
+          type: number
+      required:
+        - success
+        - adminAmount
+        - referrerAmount
+        - buyerBonus
+
+    Referral:
+      type: object
+      properties:
+        id:
+          type: integer
+        referrerId:
+          type: integer
+        refereeId:
+          type: integer
+        bonusAmount:
+          type: number
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - referrerId
+        - refereeId
+        - bonusAmount
+        - status
+        - createdAt
+
+    AdsenseStatus:
+      type: object
+      properties:
+        active:
+          type: boolean
+        message:
+          type: string
+      required:
+        - active
+        - message
+
+    TrackViewBody:
+      type: object
+      properties:
+        username:
+          type: string
+        visitorId:
+          type: string
+      required:
+        - username
+        - visitorId
+
+    ViewCount:
+      type: object
+      properties:
+        totalViews:
+          type: integer
+        adsenseEligible:
+          type: boolean
+      required:
+        - totalViews
+        - adsenseEligible
+
+    ReportBody:
+      type: object
+      properties:
+        productId:
+          type: integer
+        reason:
+          type: string
+      required:
+        - productId
+        - reason
+
+    ReportResponse:
+      type: object
+      properties:
+        reportCount:
+          type: integer
+        status:
+          type: string
+      required:
+        - reportCount
+        - status
+
+    DomainCheckBody:
+      type: object
+      properties:
+        domain:
+          type: string
+      required:
+        - domain
+
+    DomainCheckResult:
+      type: object
+      properties:
+        available:
+          type: boolean
+        domain:
+          type: string
+        price:
+          type: number
+      required:
+        - available
+        - domain
+        - price
+
+    DomainPurchaseBody:
+      type: object
+      properties:
+        domain:
+          type: string
+        mobileMoneyNumber:
+          type: string
+      required:
+        - domain
+        - mobileMoneyNumber
+
+    DomainPurchaseResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        domain:
+          type: string
+        message:
+          type: string
+      required:
+        - success
+        - domain
+        - message
+
+    Domain:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        domain:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - domain
+        - status
+        - createdAt
+
+    OpenrouterConversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - createdAt
+
+    OpenrouterMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+
+    CreateOpenrouterConversationBody:
+      type: object
+      properties:
+        title:
+          type: string
+      required:
+        - title
+
+    SendOpenrouterMessageBody:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+
+    OpenrouterConversationWithMessages:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpenrouterMessage"
+      required:
+        - id
+        - title
+        - createdAt
+        - messages
+
+    OpenrouterError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
