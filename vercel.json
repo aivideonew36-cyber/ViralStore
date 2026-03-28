@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/viralstore run build",
+  "installCommand": "npx --yes pnpm@10.26.1 install --no-frozen-lockfile",
+  "buildCommand": "npx pnpm@10.26.1 --filter @workspace/viralstore run build",
   "outputDirectory": "artifacts/viralstore/dist",
   "framework": null,
   "functions": {
