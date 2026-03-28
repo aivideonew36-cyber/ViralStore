@@ -15,6 +15,7 @@ import Withdraw from "./pages/Withdraw";
 import Domains from "./pages/Domains";
 import PublicShop from "./pages/PublicShop";
 import Join from "./pages/Join";
+import CoachPage from "./pages/Coach";
 import { Login, Register } from "./pages/Auth";
 import { useAuth } from "./hooks/use-auth";
 
@@ -85,6 +86,9 @@ function Router() {
       </Route>
       <Route path="/dashboard/domains">
         {() => <ProtectedRoute component={Domains} />}
+      </Route>
+      <Route path="/dashboard/coach">
+        {() => <ProtectedRoute component={CoachPage} />}
       </Route>
 
       <Route component={NotFound} />

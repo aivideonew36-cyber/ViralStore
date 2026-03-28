@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, LayoutDashboard, ShoppingBag, Users, Wallet, Globe, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, ShoppingBag, Users, Wallet, Globe, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useGetWallets } from "@workspace/api-client-react";
 import { AiCoach } from "./AiCoach";
@@ -13,6 +13,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
   const links = [
     { href: "/dashboard", label: "Aperçu", icon: LayoutDashboard },
+    { href: "/dashboard/coach", label: "Coach IA", icon: Sparkles, highlight: true },
     { href: "/dashboard/products", label: "Catalogue Vidéos", icon: ShoppingBag },
     { href: "/dashboard/referrals", label: "Parrainage", icon: Users },
     { href: "/dashboard/withdraw", label: "Retraits", icon: Wallet },
