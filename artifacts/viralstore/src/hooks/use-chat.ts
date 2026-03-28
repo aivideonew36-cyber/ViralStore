@@ -113,11 +113,22 @@ export function useAIChat() {
     }
   };
 
+  const reset = () => {
+    setMessages([]);
+    setStreamingContent("");
+    setIsStreaming(false);
+    // Create a fresh conversation
+    createConvMutation.mutate({ data: { title: "Coach ViralStore" } }, {
+      onSuccess: (newConv) => setActiveConversationId(newConv.id)
+    });
+  };
+
   return {
     messages,
     isStreaming,
     streamingContent,
     sendMessage,
-    isReady: !!activeConversationId
+    isReady: !!activeConversationId,
+    reset,
   };
 }
