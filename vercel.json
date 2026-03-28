@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "nodeVersion": "20.x",
-  "installCommand": "npm install -g pnpm@9.15.4 && pnpm install --no-frozen-lockfile",
+  "nodeVersion": "22.x",
+  "installCommand": "npm install -g pnpm@10.11.0 && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/viralstore run build",
   "outputDirectory": "artifacts/viralstore/dist",
   "framework": null,
